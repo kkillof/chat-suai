@@ -144,9 +144,17 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="includes.h" />
+    <ClInclude Include="IPEndpoint.h" />
+    <ClInclude Include="network.h" />
+    <ClInclude Include="PResult.h" />
+    <ClInclude Include="Socket.h" />
+    <ClInclude Include="SocketHandle.h" />
+    <ClInclude Include="SocketOptions.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="includes.cpp" />
+    <ClCompile Include="IPEndpoint.cpp" />
+    <ClCompile Include="network.cpp" />
+    <ClCompile Include="Socket.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

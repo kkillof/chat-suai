@@ -1,6 +1,3 @@
 #pragma once
-
-namespace pNet 
-{
-	int ReturnFive();
-}
+#include "network.h"
+#include "Socket.h"
