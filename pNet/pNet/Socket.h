@@ -12,6 +12,12 @@ namespace pNet
 		Socket(SocketHandle handle = INVALID_SOCKET);
 		pResult Create();
 		pResult Close();
+		pResult Bind(IPEndpoint endpoint);
+		pResult Listen(IPEndpoint endpoint, int backlog = 5);
+		pResult Accept(Socket &outSocket);
+		pResult Connect(IPEndpoint endpoint);
+		pResult Send(void* data, int numberOfBytes, int &bytesSent);
+		pResult Recv(void* destination, int numberOfBytes, int& bytesReceived);
 		SocketHandle GetHandle();
 		
 	private:

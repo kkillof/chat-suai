@@ -6,7 +6,7 @@ bool pNet::Network::Initialize()
 {
 	WSADATA wsadata;
 	int result = WSAStartup(MAKEWORD(2, 2), &wsadata);
-	if (result)
+	if (result!=0)
 	{
 		std::cerr << "failed to start up the winsock API" << std::endl;
 		return false;

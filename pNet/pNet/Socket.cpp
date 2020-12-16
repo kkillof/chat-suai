@@ -46,6 +46,88 @@ namespace pNet {
 		return pResult::P_Success;
 	}
 
+	pResult Socket::Bind(IPEndpoint endpoint)
+	{
+		sockaddr_in addr = endpoint.GetSockAddr();
+		int result = bind(handle, (sockaddr*)(&addr), sizeof(sockaddr_in));
+		if (result != 0)
+		{
+			int error = WSAGetLastError();
+			return pResult::P_NotYetImplemented;
+		}
+		return pResult::P_Success;
+	}
+
+	pResult Socket::Listen(IPEndpoint endpoint, int backlog)
+	{
+		if (Bind(endpoint) != pResult::P_Success)
+		{
+			return pResult::P_NotYetImplemented;
+		}
+
+		int result = listen(handle, backlog);
+		if (result != 0)
+		{
+			int error = WSAGetLastError();
+			return pResult::P_NotYetImplemented;
+		}
+
+		return pResult::P_Success;
+	}
+
+	pResult Socket::Accept(Socket& outSocket)
+	{
+		sockaddr_in addr = {};
+		int len = sizeof(sockaddr_in);
+		SocketHandle acceptedConnectionHandle = accept(handle, (sockaddr*)(&addr), &len);
+		if (acceptedConnectionHandle == INVALID_SOCKET)
+		{
+			int error = WSAGetLastError();
+			return pResult::P_NotYetImplemented;
+		}
+		IPEndpoint newConnectionEndpoint((sockaddr*)&addr);
+		outSocket = Socket(acceptedConnectionHandle);
+		return pResult::P_Success;
+	}
+
+	pResult Socket::Connect(IPEndpoint endpoint)
+	{
+		sockaddr_in addr = endpoint.GetSockAddr();
+		int result = connect(handle, (sockaddr*)(&addr), sizeof(sockaddr_in));
+		if (result != 0)
+		{
+			int error = WSAGetLastError();
+			return pResult::P_NotYetImplemented;
+		}
+		return pResult::P_Success;
+	}
+
+	pResult Socket::Send(void* data, int numberOfBytes, int& bytesSent)
+	{
+		bytesSent = send(handle, (const char*)data, numberOfBytes, NULL);
+		if (bytesSent == SOCKET_ERROR)
+		{
+			int error = WSAGetLastError();
+			return pResult::P_NotYetImplemented;
+		}
+		return pResult::P_Success;
+	}
+
+	pResult Socket::Recv(void* destination, int numberOfBytes, int& bytesReceived)
+	{
+		bytesReceived = recv(handle, (char*)destination, numberOfBytes, NULL);
+		if (bytesReceived == 0) 
+		{
+			return pResult::P_NotYetImplemented;
+		}
+		if (bytesReceived == SOCKET_ERROR)
+		{
+			int error = WSAGetLastError();
+			return pResult::P_NotYetImplemented;
+		}
+		return pResult::P_Success;
+	}
+
 	SocketHandle Socket::GetHandle()
 	{
 		return handle;
