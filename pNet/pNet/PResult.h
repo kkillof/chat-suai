@@ -2,9 +2,9 @@
 
 namespace pNet
 {
-	enum pResult
+	enum class pResult
 	{
 		P_Success,
-		P_NotYetImplemented
+		P_GenericError
 	};
 }

@@ -8,28 +8,36 @@ int main()
 {
 	if (Network::Initialize())
 	{
-		std::cout << "Winsock api succesfully initialized" << std::endl;
+		std::cout << "Winsock api successfully initialized." << std::endl;
 		Socket socket;
 		if (socket.Create() == pResult::P_Success)
 		{
 			std::cout << "Socket successfully created." << std::endl;
-			if (socket.Connect(IPEndpoint("127.0.0.1", 1111)) == pResult::P_Success)
+			if (socket.Connect(IPEndpoint("127.0.0.1", 4790)) == pResult::P_Success)
 			{
-				std::cout << "Successfully connected to server" << std::endl;
-				char buffer[256];
-				strcpy_s(buffer, "Hello world\0");
-				int bytesSent = 0;
-				int result = pResult::P_Success;
-				while (result == pResult::P_Success);
+				std::cout << "Successfully connected to server!" << std::endl;
+
+				std::string buffer = "Hello world from client!";
+
+				while (true)
 				{
-					result = socket.Send(buffer, 256, bytesSent);
+					uint32_t bufferSize = buffer.size();
+					bufferSize = htonl(bufferSize); //convert from host to network byte order - all integers sent over a stream should be in network byte order
+					pResult result = socket.SendALL(&bufferSize, sizeof(uint32_t));
+					if (result != pResult::P_Success)
+						break;
+
+					result = socket.SendALL(buffer.data(), buffer.size());
+					if (result != pResult::P_Success)
+						break;
+
 					std::cout << "Attempting to send chunk of data..." << std::endl;
 					Sleep(500);
 				}
 			}
 			else
 			{
-				std::cerr << "Connection to server failed" << std::endl;
+				std::cerr << "Failed to connect to server." << std::endl;
 			}
 			socket.Close();
 		}

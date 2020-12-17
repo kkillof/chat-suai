@@ -12,18 +12,18 @@ namespace pNet {
 	{
 		if (handle != INVALID_SOCKET)
 		{
-			return pResult::P_NotYetImplemented;
+			return pResult::P_GenericError;
 		}
 
 		handle = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 		if (handle == INVALID_SOCKET)
 		{
 			int error = WSAGetLastError();
-			return pResult::P_NotYetImplemented;
+			return pResult::P_GenericError;
 		}
 		if (SetSocketOptions(SocketOption::TCP_NoDelay, TRUE) != pResult::P_Success)
 		{
-			return pResult::P_NotYetImplemented;
+			return pResult::P_GenericError;
 		}
 		return pResult::P_Success;
 	}
@@ -32,14 +32,14 @@ namespace pNet {
 	{
 		if (handle == INVALID_SOCKET)
 		{
-			return pResult::P_NotYetImplemented;
+			return pResult::P_GenericError;
 		}
 
 		int result = closesocket(handle);
 		if (result != 0)
 		{
 			int error = WSAGetLastError();
-			return pResult::P_NotYetImplemented;
+			return pResult::P_GenericError;
 		}
 		
 		handle = INVALID_SOCKET;
@@ -53,7 +53,7 @@ namespace pNet {
 		if (result != 0)
 		{
 			int error = WSAGetLastError();
-			return pResult::P_NotYetImplemented;
+			return pResult::P_GenericError;
 		}
 		return pResult::P_Success;
 	}
@@ -62,14 +62,14 @@ namespace pNet {
 	{
 		if (Bind(endpoint) != pResult::P_Success)
 		{
-			return pResult::P_NotYetImplemented;
+			return pResult::P_GenericError;
 		}
 
 		int result = listen(handle, backlog);
 		if (result != 0)
 		{
 			int error = WSAGetLastError();
-			return pResult::P_NotYetImplemented;
+			return pResult::P_GenericError;
 		}
 
 		return pResult::P_Success;
@@ -83,7 +83,7 @@ namespace pNet {
 		if (acceptedConnectionHandle == INVALID_SOCKET)
 		{
 			int error = WSAGetLastError();
-			return pResult::P_NotYetImplemented;
+			return pResult::P_GenericError;
 		}
 		IPEndpoint newConnectionEndpoint((sockaddr*)&addr);
 		outSocket = Socket(acceptedConnectionHandle);
@@ -97,7 +97,7 @@ namespace pNet {
 		if (result != 0)
 		{
 			int error = WSAGetLastError();
-			return pResult::P_NotYetImplemented;
+			return pResult::P_GenericError;
 		}
 		return pResult::P_Success;
 	}
@@ -108,23 +108,61 @@ namespace pNet {
 		if (bytesSent == SOCKET_ERROR)
 		{
 			int error = WSAGetLastError();
-			return pResult::P_NotYetImplemented;
+			return pResult::P_GenericError;
 		}
 		return pResult::P_Success;
 	}
 
-	pResult Socket::Recv(void* destination, int numberOfBytes, int& bytesReceived)
+	pResult Socket::Recv(const void* destination, int numberOfBytes, int& bytesReceived)
 	{
 		bytesReceived = recv(handle, (char*)destination, numberOfBytes, NULL);
 		if (bytesReceived == 0) 
 		{
-			return pResult::P_NotYetImplemented;
+			return pResult::P_GenericError;
 		}
 		if (bytesReceived == SOCKET_ERROR)
 		{
 			int error = WSAGetLastError();
-			return pResult::P_NotYetImplemented;
+			return pResult::P_GenericError;
 		}
+		return pResult::P_Success;
+	}
+
+	pResult Socket::SendALL(const void* data, int numberOfBytes)
+	{
+		int totalBytesSent = 0;
+		while (totalBytesSent < numberOfBytes)
+		{
+			int bytesRemaining = numberOfBytes - totalBytesSent;
+			int bytesSent=0;
+			char* bufferOffset = (char*)data + totalBytesSent;
+			pResult result = Send(bufferOffset, bytesRemaining, bytesSent);
+			if (result != pResult::P_Success) 
+			{
+				return pResult::P_GenericError;
+			}
+			totalBytesSent += bytesSent;
+		}
+
+		return pResult::P_Success;
+	}
+
+	pResult Socket::RecvALL(void* destination, int numberOfBytes)
+	{
+		int totalBytesReceived = 0;
+		while (totalBytesReceived < numberOfBytes)
+		{
+			int bytesRemaining = numberOfBytes - totalBytesReceived;
+			int bytesSent = 0;
+			char* bufferOffset = (char*)destination + totalBytesReceived;
+			pResult result = Recv(bufferOffset, bytesRemaining, bytesSent);
+			if (result != pResult::P_Success)
+			{
+				return pResult::P_GenericError;
+			}
+			totalBytesReceived += bytesSent;
+		}
+
 		return pResult::P_Success;
 	}
 
@@ -143,13 +181,13 @@ namespace pNet {
 			break;
 
 		default:
-			return pResult::P_NotYetImplemented;
+			return pResult::P_GenericError;
 		}
 
 		if (result!=0) 
 		{
 			int error = WSAGetLastError();
-			return pResult::P_NotYetImplemented;
+			return pResult::P_GenericError;
 		}
 		return pResult::P_Success;
 	}

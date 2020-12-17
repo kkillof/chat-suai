@@ -17,7 +17,9 @@ namespace pNet
 		pResult Accept(Socket &outSocket);
 		pResult Connect(IPEndpoint endpoint);
 		pResult Send(void* data, int numberOfBytes, int &bytesSent);
-		pResult Recv(void* destination, int numberOfBytes, int& bytesReceived);
+		pResult Recv(const void* destination, int numberOfBytes, int& bytesReceived);
+		pResult SendALL(const void* data, int numberOfBytes);
+		pResult RecvALL(void* destination, int numberOfBytes);
 		SocketHandle GetHandle();
 		
 	private:
