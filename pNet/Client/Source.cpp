@@ -1,7 +1,8 @@
 //Client code
-
+#define _CRT_SECURE_NO_WARNINGS
 #include <iostream>
 #include <pNet/includes.h>
+
 using namespace pNet;
 
 int main()
@@ -17,20 +18,17 @@ int main()
 			{
 				std::cout << "Successfully connected to server!" << std::endl;
 
-				std::string buffer = "Hello world from client!";
-
+				uint32_t a, b, c;
+				a = 4;
+				b = 6;
+				c = 9;
+				Packet packet;
+				packet << a << b << c;
 				while (true)
 				{
-					uint32_t bufferSize = buffer.size();
-					bufferSize = htonl(bufferSize); //convert from host to network byte order - all integers sent over a stream should be in network byte order
-					pResult result = socket.SendALL(&bufferSize, sizeof(uint32_t));
+					pResult result = socket.Send(packet);
 					if (result != pResult::P_Success)
 						break;
-
-					result = socket.SendALL(buffer.data(), buffer.size());
-					if (result != pResult::P_Success)
-						break;
-
 					std::cout << "Attempting to send chunk of data..." << std::endl;
 					Sleep(500);
 				}

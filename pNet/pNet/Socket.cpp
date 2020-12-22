@@ -166,6 +166,41 @@ namespace pNet {
 		return pResult::P_Success;
 	}
 
+	pResult Socket::Send(Packet& packet)
+	{
+		uint32_t encodedPacketSize = htonl(packet.buffer.size());
+		pResult result = SendALL(&encodedPacketSize, sizeof(uint32_t));
+		if (result != pResult::P_Success)
+			return pResult::P_GenericError;
+
+		result = SendALL(packet.buffer.data(), packet.buffer.size());
+		if (result != pResult::P_Success)
+			return pResult::P_GenericError;
+		
+		return pResult::P_Success;
+	}
+
+	pResult Socket::Recv(Packet& packet)
+	{
+		packet.Clear();
+
+		uint32_t encodedSize = 0;
+		pResult result = RecvALL(&encodedSize, sizeof(uint32_t));
+		if (result != pResult::P_Success)
+		{
+			return pResult::P_GenericError;
+		}
+
+		uint32_t bufferSize = ntohl(encodedSize);
+		packet.buffer.resize(bufferSize);
+		result = RecvALL(&packet.buffer[0], bufferSize);
+		if (result != pResult::P_Success)
+		{
+			return pResult::P_GenericError;
+		}
+		return pResult::P_Success;
+	}
+
 	SocketHandle Socket::GetHandle()
 	{
 		return handle;

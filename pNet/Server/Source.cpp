@@ -20,24 +20,17 @@ int main()
 				if (socket.Accept(newConnection) == pResult::P_Success)
 				{
 					std::cout << "New connection accepted." << std::endl;
-
-					std::string buffer = "";
+					uint32_t a(0), b(0), c(0);
+					Packet packet;
 					while (true)
 					{
-						uint32_t bufferSize = 0;
-						pResult result = newConnection.RecvALL(&bufferSize, sizeof(uint32_t));
+						
+						pResult result = newConnection.Recv(packet);
 						if (result != pResult::P_Success)
 							break;
 
-						bufferSize = ntohl(bufferSize); //convert buffer size from network byte order to host byte order due to integer endiannesss
-
-
-						buffer.resize(bufferSize);
-						result = newConnection.RecvALL(&buffer[0], bufferSize);
-						if (result != pResult::P_Success)
-							break;
-
-						std::cout << "[" << bufferSize << "] - " << buffer << std::endl;
+						packet >> a >> b >> c;
+						std::cout << a << "," << b << "," << c << std::endl;
 					}
 
 					newConnection.Close();

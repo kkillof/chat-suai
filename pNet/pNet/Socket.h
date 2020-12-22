@@ -3,6 +3,7 @@
 #include "PResult.h"
 #include "SocketOptions.h"
 #include "IPEndpoint.h"
+#include "Packet.h"
 
 namespace pNet 
 {
@@ -20,6 +21,8 @@ namespace pNet
 		pResult Recv(const void* destination, int numberOfBytes, int& bytesReceived);
 		pResult SendALL(const void* data, int numberOfBytes);
 		pResult RecvALL(void* destination, int numberOfBytes);
+		pResult Send(Packet& packet);
+		pResult Recv(Packet& packet);
 		SocketHandle GetHandle();
 		
 	private:
