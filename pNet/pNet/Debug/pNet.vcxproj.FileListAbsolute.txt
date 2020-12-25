@@ -1,0 +1,4 @@
+C:\Users\ilyak\source\repos\pNet\Debug\pNet.pdb
+C:\Users\ilyak\source\repos\pNet\pNet\Debug\pNet.pdb
+C:\Users\ilyak\Documents\GitHub\chat-suai\pNet\Debug\pNet.pdb
+C:\Users\ilyak\Documents\GitHub\chat-suai\pNet\pNet\Debug\pNet.pdb
